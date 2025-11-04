@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.learnxr.core": "https://github.com/dilmerv/com.learnxr.core.git",
     "com.meta.xr.mrutilitykit": "78.0.0",
     "com.meta.xr.sdk.all": "81.0.0",
     "com.unity.feature.development": "1.0.2",
