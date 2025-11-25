@@ -25,6 +25,28 @@ public class IKTargetFollowVRRig : MonoBehaviour
     public Vector3 headBodyPositionOffset;
     public float headBodyYawOffset;
 
+    [Header("ResizeModel")]
+    [SerializeField]
+    private float modelEyeHeight = 1.75f;
+    [SerializeField]
+    private OVRCameraRig ovrCameraRig;
+
+    void Start()
+    {
+        if(ovrCameraRig != null)
+        {
+            float userEyeHeight = ovrCameraRig.centerEyeAnchor.position.y;
+            float heightRatio = userEyeHeight / modelEyeHeight;
+            Debug.Log($"User eye height: {userEyeHeight}, Height Ratio: {heightRatio}");
+            transform.localScale = new Vector3(heightRatio, heightRatio, heightRatio);
+            headBodyPositionOffset *= heightRatio;
+        }
+        else
+        {
+            Debug.Log("não achou camera rig");
+        }
+    }
+
     // Update is called once per frame
     void LateUpdate()
     {
