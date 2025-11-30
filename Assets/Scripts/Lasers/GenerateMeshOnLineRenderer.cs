@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using UnityEditor.SceneManagement;
+
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
