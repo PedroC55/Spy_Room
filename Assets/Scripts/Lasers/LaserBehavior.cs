@@ -12,16 +12,16 @@ public class LaserBehavior : MonoBehaviour
 
     void Start()
     {
-        lineRenderer = GetComponent<LineRenderer>();
+        /*lineRenderer = GetComponent<LineRenderer>();
         if (lineRenderer != null)
         {
             originalColor = lineRenderer.startColor;
-        }
+        }*/
     }
 
     void Update()
     {
-        if (enablePulse && lineRenderer != null)
+        /*if (enablePulse && lineRenderer != null)
         {
             // Create pulsing effect
             float pulse = Mathf.Lerp(minIntensity, 1f, (Mathf.Sin(Time.time * pulseSpeed) + 1f) / 2f);
@@ -30,7 +30,7 @@ public class LaserBehavior : MonoBehaviour
             
             lineRenderer.startColor = pulsedColor;
             lineRenderer.endColor = pulsedColor;
-        }
+        }*/
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,6 +39,7 @@ public class LaserBehavior : MonoBehaviour
         // Check if player touched the laser
         if (other.CompareTag("Player") || other.CompareTag("MainCamera"))
         {
+            Debug.LogError("Player has touched the laser!");
             OnLaserTouched(other.gameObject);
         }
     }
@@ -55,7 +56,7 @@ public class LaserBehavior : MonoBehaviour
         }
 
         // Visual feedback
-        StartCoroutine(FlashLaser());
+        //StartCoroutine(FlashLaser());
     }
 
     private System.Collections.IEnumerator FlashLaser()

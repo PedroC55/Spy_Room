@@ -1,6 +1,9 @@
-using UnityEngine;
 using Meta.XR.MRUtilityKit;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Android;
+using UnityEngine.Animations.Rigging;
 
 public class LaserSpawner : MonoBehaviour
 {
@@ -9,9 +12,11 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private int numberOfLasers = 2;
     [SerializeField] private float laserWidth = 0.02f;
     [SerializeField] private Color laserColor = Color.red;
-    
-    private MRUKRoom currentRoom;
+    [SerializeField] private LayerMask sceneMeshLayer;
+
     private List<GameObject> activeLasers = new List<GameObject>();
+
+    private MRUKRoom currentRoom;
 
     void Start()
     {
@@ -22,66 +27,59 @@ public class LaserSpawner : MonoBehaviour
             return;
         }
 
-        MRUK.Instance.RegisterSceneLoadedCallback(OnSceneLoaded);
+        MRUK.Instance.RoomCreatedEvent.AddListener(OnSceneLoaded);
     }
 
-    private void OnSceneLoaded()
+    private void OnSceneLoaded(MRUKRoom room)
     {
-        currentRoom = MRUK.Instance.GetCurrentRoom();
-        
-        if (currentRoom == null)
-        {
-            Debug.LogError("No room found!");
-            return;
-        }
+        currentRoom = room;
 
         SpawnLasers();
     }
 
     private void SpawnLasers()
     {
-        // Get ceiling and floor anchors using properties
-        MRUKAnchor ceiling = currentRoom.CeilingAnchor;
-        MRUKAnchor floor = currentRoom.FloorAnchor;
-
-        if (ceiling == null || floor == null)
-        {
-            Debug.LogError("Ceiling or floor not found!");
-            return;
-        }
-
-        // Get ceiling and floor positions
-        Vector3 ceilingCenter = ceiling.transform.position;
-        Vector3 floorCenter = floor.transform.position;
-
-        // Calculate height
-        float roomHeight = Mathf.Abs(ceilingCenter.y - floorCenter.y);
-
-        Debug.Log($"Room height: {roomHeight}m");
-
-        // Spawn lasers at different positions
         for (int i = 0; i < numberOfLasers; i++)
         {
-            Vector3 spawnPosition = GetRandomPositionInRoom(ceilingCenter, floor);
-            CreateLaser(spawnPosition, roomHeight);
+            StartCoroutine(WaitEndOfFrame());
         }
     }
 
-    private Vector3 GetRandomPositionInRoom(Vector3 ceilingCenter, MRUKAnchor floor)
+    private IEnumerator WaitEndOfFrame()
     {
-        // Get the floor plane rect bounds
-        Rect floorBounds = floor.PlaneRect.Value;
-        
-        // Generate random position within bounds
-        float randomX = Random.Range(floorBounds.xMin, floorBounds.xMax);
-        float randomZ = Random.Range(floorBounds.yMin, floorBounds.yMax);
-        
-        // Convert to world position at ceiling height
-        Vector3 localPosition = new Vector3(randomX, 0, randomZ);
-        Vector3 worldPosition = floor.transform.TransformPoint(localPosition);
-        worldPosition.y = ceilingCenter.y;
-        
-        return worldPosition;
+        yield return new WaitForEndOfFrame();
+        SpawnCellingLaser();
+    }
+
+    private void SpawnCellingLaser()
+    {
+        GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, RoomSpawnPosition.SpawnLocation.HangingDown, out var spawnPostion, out var spawnNormal);
+        if (laser == null)
+        {
+            return;
+        }
+
+        if (Physics.Raycast(new Ray(spawnPostion, spawnNormal), out var hit, Mathf.Infinity, sceneMeshLayer))
+        {
+            LineRenderer line = laser.GetComponent<LineRenderer>();
+            line.startColor = laserColor;
+            line.endColor = laserColor;
+            line.startWidth = laserWidth;
+            line.endWidth = laserWidth;
+
+            Physics.Raycast(new Ray(spawnPostion, -spawnNormal), out var hitOrigin, Mathf.Infinity, sceneMeshLayer);
+
+            line.SetPosition(0, hitOrigin.point);
+            line.SetPosition(1, hit.point);
+
+            CapsuleCollider col = laser.AddComponent<CapsuleCollider>();
+            col.isTrigger = true;
+            col.radius = laserWidth;
+        }
+        else
+        {
+            Debug.LogWarning("Raycast did not hit Terrain");
+        }
     }
 
     private void CreateLaser(Vector3 topPosition, float height)
