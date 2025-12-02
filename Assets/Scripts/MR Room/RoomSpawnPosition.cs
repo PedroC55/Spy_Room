@@ -148,6 +148,7 @@ public class RoomSpawnPosition : MonoBehaviour
 
             if (room.GenerateRandomPositionOnSurface(surfaceType, minRadius, new LabelFilter(Labels), out var pos, out var normal))
             {
+                
                 spawnPosition = pos + normal * baseOffset;
                 spawnNormal = normal;
                 var center = spawnPosition + normal * centerOffset;
@@ -196,6 +197,130 @@ public class RoomSpawnPosition : MonoBehaviour
         Debug.LogWarning($"Failed to find valid spawn position after {MaxIterations} iterations.");
         return null;
     }
+
+    public GameObject SpawnObjective(GameObject objectToSpawn,Transform playerPosition, MRUKRoom room, int maxInteractions, out Vector3 spawnPosition, out Vector3 spawnNormal)
+    {
+        spawnPosition = Vector3.zero;
+        spawnNormal = Vector3.zero;
+        var prefabBounds = Utilities.GetPrefabBounds(objectToSpawn);
+        var minRadius = 0.0f;
+        const float clearanceDistance = 0.01f;
+        var baseOffset = -prefabBounds?.min.y ?? 0.0f;
+        var centerOffset = prefabBounds?.center.y ?? 0.0f;
+        float currentDistance = 0f;
+        Vector3 currentVectorPostion = Vector3.zero;
+        Quaternion currentVectorRotation = Quaternion.identity;
+        bool sucess = false;
+        Bounds adjustedBounds = new();
+
+        if (prefabBounds.HasValue)
+        {
+            minRadius = Mathf.Min(-prefabBounds.Value.min.x, -prefabBounds.Value.min.z, prefabBounds.Value.max.x, prefabBounds.Value.max.z);
+            if (minRadius < 0f)
+            {
+                minRadius = 0f;
+            }
+
+            var min = prefabBounds.Value.min;
+            var max = prefabBounds.Value.max;
+            min.y += clearanceDistance;
+            if (max.y < min.y)
+            {
+                max.y = min.y;
+            }
+
+            adjustedBounds.SetMinMax(min, max);
+            if (OverrideBounds > 0)
+            {
+                var center = new Vector3(0f, clearanceDistance, 0f);
+                var size = new Vector3(OverrideBounds * 2f, clearanceDistance * 2f,
+                    OverrideBounds * 2f); // OverrideBounds represents the extents, not the size
+                adjustedBounds = new Bounds(center, size);
+            }
+        }
+
+        for (var j = 0; j < MaxIterations; ++j)
+        {
+            Debug.Log($"Remaining interactions to find farthest point: {maxInteractions}");
+            spawnPosition = Vector3.zero;
+            spawnNormal = Vector3.zero;
+            MRUK.SurfaceType surfaceType = 0;
+            surfaceType |= MRUK.SurfaceType.FACING_UP;
+            
+
+            if (room.GenerateRandomPositionOnSurface(surfaceType, minRadius, new LabelFilter(Labels), out var pos, out var normal))
+            {
+
+                spawnPosition = pos + normal * baseOffset;
+                spawnNormal = normal;
+                var center = spawnPosition + normal * centerOffset;
+                // In some cases, surfaces may protrude through walls and end up outside the room
+                // check to make sure the center of the prefab will spawn inside the room
+                if (!room.IsPositionInRoom(center))
+                {
+                    continue;
+                }
+
+                // Ensure the center of the prefab will not spawn inside a scene volume
+                if (room.IsPositionInSceneVolume(center))
+                {
+                    continue;
+                }
+
+                // Also make sure there is nothing close to the surface that would obstruct it
+                if (room.Raycast(new Ray(pos, normal), SurfaceClearanceDistance, out _))
+                {
+                    continue;
+                }
+
+                Debug.LogWarning("LEMBRAR DE COLOCAR MAIS VERIFICAÇÕES NESTA PARTE DO CODIGO");
+            }
+            else
+            {
+                Debug.LogError("Failed to generate random position on surface.");
+                return null;
+            }
+
+            var spawnRotation = Quaternion.FromToRotation(Vector3.up, spawnNormal);
+            if (CheckOverlaps && prefabBounds.HasValue)
+            {
+                if (Physics.CheckBox(spawnPosition + spawnRotation * adjustedBounds.center, adjustedBounds.extents, spawnRotation, LayerMask, QueryTriggerInteraction.Ignore))
+                {
+                    continue;
+                }
+            }
+
+            float distance = Vector3.Distance(playerPosition.position, spawnPosition);
+            if (distance > currentDistance)
+            {
+                currentDistance = distance;
+                currentVectorPostion = spawnPosition;
+                currentVectorRotation = spawnRotation;
+            }
+
+            maxInteractions--;
+            if (maxInteractions == 0)
+            {
+                sucess = true;
+                break;
+            }
+                
+            
+        }
+        if (sucess)
+        {
+            Debug.Log("Spawn Objective at the farthest point");
+            var item = Instantiate(objectToSpawn, currentVectorPostion, currentVectorRotation, transform);
+            spawnedObjects.Add(item);
+
+            return item;
+        }
+
+        Debug.LogWarning($"Failed to find valid spawn position after {MaxIterations} iterations.");
+        return null;
+    }
+
+
 
     /// <summary>
     /// Destroys all the game objects instantiated and clears the <see cref="SpawnedObjects"/> list.

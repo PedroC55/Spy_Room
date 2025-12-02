@@ -14,6 +14,15 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private Color laserColor = Color.red;
     [SerializeField] private LayerMask sceneMeshLayer;
 
+    [Header("Objective Settings")]
+    [SerializeField] private int maxInteractions = 20;
+    [SerializeField] private float objectiveWidth = 0.3f;
+    [SerializeField] private Color objectiveColor = Color.yellow;
+
+
+
+    [SerializeField] private OVRCameraRig ovrCameraRig;
+
     private List<GameObject> activeLasers = new List<GameObject>();
 
     private MRUKRoom currentRoom;
@@ -35,6 +44,8 @@ public class LaserSpawner : MonoBehaviour
         currentRoom = room;
 
         SpawnLasers();
+
+        
     }
 
     private void SpawnLasers()
@@ -49,6 +60,37 @@ public class LaserSpawner : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         SpawnCellingLaser();
+        SpawnObjective();
+    }
+
+    private void SpawnObjective()
+    {
+        GameObject objective = RoomSpawnPosition.Instance.SpawnObjective(laserPrefab, ovrCameraRig.transform, currentRoom, maxInteractions, out var spawnPostion, out var spawnNormal);
+        if (objective == null)
+        {
+            return;
+        }
+        if (Physics.Raycast(new Ray(spawnPostion, spawnNormal), out var hit, Mathf.Infinity, sceneMeshLayer))
+        {
+            LineRenderer line = objective.GetComponent<LineRenderer>();
+            line.startColor = objectiveColor;
+            line.endColor = objectiveColor;
+            line.startWidth = objectiveWidth;
+            line.endWidth = objectiveWidth;
+
+            Physics.Raycast(new Ray(spawnPostion, -spawnNormal), out var hitOrigin, Mathf.Infinity, sceneMeshLayer);
+
+            line.SetPosition(0, hitOrigin.point);
+            line.SetPosition(1, hit.point);
+
+            CapsuleCollider col = objective.AddComponent<CapsuleCollider>();
+            col.isTrigger = true;
+            col.radius = objectiveWidth;
+        }
+        else
+        {
+            Debug.LogWarning("Raycast did not hit Terrain");
+        }
     }
 
     private void SpawnCellingLaser()
