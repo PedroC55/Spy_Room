@@ -635,7 +635,7 @@ MonoBehaviour:
   Colliders: 1
   CutHoles: 0
   castShadows: 0
-  hideMesh: 0
+  hideMesh: 1
   Layer: 0
   textureCoordinateModes:
   - WallU: 5
@@ -826,6 +826,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 959022332}
   m_CullTransparentMesh: 1
+--- !u!1001 &1050841433
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.2182946
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812667105067743761, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5122794688996794194, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
+      propertyPath: m_Name
+      value: Mirror
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 20bd3b6327dae434e90792380d910dd2, type: 3}
 --- !u!1 &1064713167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,6 +1197,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spy Rig and Avatar
       objectReference: {fileID: 0}
+    - target: {fileID: 3469824609265857525, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 4626544587624320226, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1329,3 +1390,4 @@ SceneRoots:
   - {fileID: 1064713170}
   - {fileID: 163208956}
   - {fileID: 1340296130}
+  - {fileID: 1050841433}
