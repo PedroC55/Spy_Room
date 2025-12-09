@@ -252,7 +252,8 @@ public class RoomSpawnPosition : MonoBehaviour
             {
 
                 spawnPosition = pos + normal * baseOffset;
-                spawnNormal = normal;
+                spawnNormal = -normal;
+                Debug.Log("Spawn Normal Candidate: " + spawnNormal);
                 var center = spawnPosition + normal * centerOffset;
                 // In some cases, surfaces may protrude through walls and end up outside the room
                 // check to make sure the center of the prefab will spawn inside the room

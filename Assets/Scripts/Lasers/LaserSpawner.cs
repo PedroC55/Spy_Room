@@ -45,7 +45,7 @@ public class LaserSpawner : MonoBehaviour
 
         SpawnLasers();
 
-        
+        StartCoroutine(WaitEndOfFrameObjective());
     }
 
     private void SpawnLasers()
@@ -56,11 +56,16 @@ public class LaserSpawner : MonoBehaviour
         }
     }
 
+    private IEnumerator WaitEndOfFrameObjective()
+    {
+        yield return new WaitForEndOfFrame();
+        SpawnObjective();
+    }
+
     private IEnumerator WaitEndOfFrame()
     {
         yield return new WaitForEndOfFrame();
         SpawnCellingLaser();
-        SpawnObjective();
     }
 
     private void SpawnObjective()
