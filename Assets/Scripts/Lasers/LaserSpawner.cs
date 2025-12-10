@@ -19,8 +19,6 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private float objectiveWidth = 0.3f;
     [SerializeField] private Color objectiveColor = Color.yellow;
 
-
-
     [SerializeField] private OVRCameraRig ovrCameraRig;
 
     private List<GameObject> activeLasers = new List<GameObject>();
@@ -105,6 +103,8 @@ public class LaserSpawner : MonoBehaviour
         {
             return;
         }
+
+        laser.GetComponent<LaserBehavior>().SetOVRCameraRig(ovrCameraRig);
 
         if (Physics.Raycast(new Ray(spawnPostion, spawnNormal), out var hit, Mathf.Infinity, sceneMeshLayer))
         {
