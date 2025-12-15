@@ -1303,6 +1303,7 @@ MonoBehaviour:
   sceneMeshLayer:
     serializedVersion: 2
     m_Bits: 256
+  objectivePrefab: {fileID: 2083152286455007677, guid: 382a0bfc1ab7e10458a683549f553cda, type: 3}
   maxInteractions: 20
   objectiveWidth: 0.3
   objectiveColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -1386,10 +1387,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spy Rig and Avatar
       objectReference: {fileID: 0}
-    - target: {fileID: 3469824609265857525, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
     - target: {fileID: 4626544587624320226, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1429,22 +1426,6 @@ PrefabInstance:
     - target: {fileID: 4626544587624320226, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6236804284185683601, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
-      propertyPath: ovrCameraRig
-      value: 
-      objectReference: {fileID: 1340296131}
-    - target: {fileID: 6236804284185683601, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
-      propertyPath: headBodyPositionOffset.y
-      value: -0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 6236804284185683601, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
-      propertyPath: leftHand.trackingRotationOffset.x
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 6236804284185683601, guid: 7ffca44287d54174da574f5a1846b3de, type: 3}
-      propertyPath: rightHand.trackingRotationOffset.x
-      value: 90
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

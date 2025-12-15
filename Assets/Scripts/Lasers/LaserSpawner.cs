@@ -15,15 +15,31 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private LayerMask sceneMeshLayer;
 
     [Header("Objective Settings")]
+    [SerializeField] private GameObject objectivePrefab;
     [SerializeField] private int maxInteractions = 20;
     [SerializeField] private float objectiveWidth = 0.3f;
     [SerializeField] private Color objectiveColor = Color.yellow;
+
+    GameObject objective;
+
+
 
     [SerializeField] private OVRCameraRig ovrCameraRig;
 
     private List<GameObject> activeLasers = new List<GameObject>();
 
     private MRUKRoom currentRoom;
+
+
+    private void OnEnable()
+    {
+        HitObjective.OnHit += SpawnObjective;
+    }
+
+    private void OnDisable()
+    {
+        HitObjective.OnHit -= SpawnObjective;
+    }
 
     void Start()
     {
@@ -35,6 +51,8 @@ public class LaserSpawner : MonoBehaviour
         }
 
         MRUK.Instance.RoomCreatedEvent.AddListener(OnSceneLoaded);
+
+        
     }
 
     private void OnSceneLoaded(MRUKRoom room)
@@ -66,9 +84,19 @@ public class LaserSpawner : MonoBehaviour
         SpawnCellingLaser();
     }
 
-    private void SpawnObjective()
+    public void SpawnObjective()
     {
-        GameObject objective = RoomSpawnPosition.Instance.SpawnObjective(laserPrefab, ovrCameraRig.transform, currentRoom, maxInteractions, out var spawnPostion, out var spawnNormal);
+        var spawnPostion = Vector3.zero;
+        var spawnNormal = Vector3.zero;
+        if (objective != null)
+        {
+            objective = RoomSpawnPosition.Instance.SpawnObjective(objective, ovrCameraRig.transform, currentRoom, maxInteractions, out spawnPostion, out spawnNormal);
+        }
+        else
+        {
+            objective = RoomSpawnPosition.Instance.SpawnObjective(objectivePrefab, ovrCameraRig.transform, currentRoom, maxInteractions, out spawnPostion, out spawnNormal);
+            objective.GetComponent<ObjectiveBehavior>().SetLaserSpawner(this);
+        }
         if (objective == null)
         {
             return;
@@ -96,7 +124,9 @@ public class LaserSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnCellingLaser()
+
+
+    public void SpawnCellingLaser()
     {
         GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, RoomSpawnPosition.SpawnLocation.HangingDown, out var spawnPostion, out var spawnNormal);
         if (laser == null)
@@ -126,6 +156,16 @@ public class LaserSpawner : MonoBehaviour
         else
         {
             Debug.LogWarning("Raycast did not hit Terrain");
+        }
+        activeLasers.Add(laser);
+    }
+
+    public void RemoveObjective()
+    {
+        GameObject objective = GameObject.FindWithTag("Objective");
+        if (objective != null)
+        {
+            Destroy(objective);
         }
     }
 
