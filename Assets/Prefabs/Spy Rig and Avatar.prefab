@@ -9418,7 +9418,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294966783
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -12614,16 +12614,16 @@ MonoBehaviour:
     vrTarget: {fileID: 8583630836790027071}
     ikTarget: {fileID: 2220667075950881}
     trackingPositionOffset: {x: 0, y: 0, z: 0}
-    trackingRotationOffset: {x: 0, y: 0, z: 0}
+    trackingRotationOffset: {x: 90, y: 0, z: 0}
   rightHand:
     vrTarget: {fileID: 1903073473400117439}
     ikTarget: {fileID: 953590211512909173}
     trackingPositionOffset: {x: 0, y: 0, z: 0}
-    trackingRotationOffset: {x: 0, y: 0, z: 0}
-  headBodyPositionOffset: {x: 0, y: -0.655, z: 0}
+    trackingRotationOffset: {x: 90, y: 0, z: 0}
+  headBodyPositionOffset: {x: 0, y: -0.55, z: 0}
   headBodyYawOffset: 0
   modelEyeHeight: 1.75
-  ovrCameraRig: {fileID: 0}
+  ovrCameraRig: {fileID: 2986769990258005803}
 --- !u!4 &6230143969231652452 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8191740002585371210, guid: f76ea44cc7b03a749a85ac4836506748, type: 3}

@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 using UnityEngine.XR.ARSubsystems;
 
+
+
 public class RoomSpawnPosition : MonoBehaviour
 {
     public static RoomSpawnPosition Instance { get; private set; }
@@ -67,6 +69,7 @@ public class RoomSpawnPosition : MonoBehaviour
     /// The list containing all the objects instantiated by this component
     /// </summary>
     public IReadOnlyList<GameObject> SpawnedObjects => spawnedObjects;
+
 
     private void Awake()
     {
@@ -291,6 +294,7 @@ public class RoomSpawnPosition : MonoBehaviour
                 }
             }
 
+
             float distance = Vector3.Distance(playerPosition.position, spawnPosition);
             if (distance > currentDistance)
             {
@@ -309,15 +313,25 @@ public class RoomSpawnPosition : MonoBehaviour
             
         }
         if (sucess)
-        {
-            Debug.Log("Spawn Objective at the farthest point");
-            var item = Instantiate(objectToSpawn, currentVectorPostion, currentVectorRotation, transform);
-            spawnedObjects.Add(item);
+        { 
+            if (objectToSpawn.gameObject.scene.path == null)
+            {
+                var item = Instantiate(objectToSpawn, currentVectorPostion, currentVectorRotation, transform);
+                spawnedObjects.Add(item);
+                return item;
+            }
+            else
+            {
+                objectToSpawn.transform.position = currentVectorPostion;
+                objectToSpawn.transform.rotation = currentVectorRotation;
+                return objectToSpawn; // ignore SpawnAmount once we have a successful move of existing object in the scene
+            }
 
-            return item;
+
+            
         }
-
-        Debug.LogWarning($"Failed to find valid spawn position after {MaxIterations} iterations.");
+        
+        
         return null;
     }
 
