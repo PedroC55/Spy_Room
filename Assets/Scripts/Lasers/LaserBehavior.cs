@@ -1,11 +1,17 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class LaserBehavior : MonoBehaviour
 {
     [SerializeField]
     private GameObject laserBeamAudioObject;
+    [SerializeField]
+    private GameObject laserHitAudioObject;
+    [SerializeField]
+    private VisualEffect laserVisualEffect;
 
     private OVRCameraRig ovrCameraRig;
+
 
     void Update()
     {
@@ -15,6 +21,13 @@ public class LaserBehavior : MonoBehaviour
         Vector3 projectedPoint = Vector3.Project(vectorToPlayerHead, transform.up);
 
         laserBeamAudioObject.transform.position = transform.position + projectedPoint;
+
+        if (laserVisualEffect.GetBool("Hit"))
+        {
+            laserHitAudioObject.SetActive(true);
+            laserHitAudioObject.transform.position = laserVisualEffect.GetVector3("position");
+        }
+        else laserHitAudioObject.SetActive(false);
     }
 
     public void SetOVRCameraRig(OVRCameraRig camera)

@@ -31,25 +31,35 @@ public class IKTargetFollowVRRig : MonoBehaviour
     [SerializeField]
     private OVRCameraRig ovrCameraRig;
 
+    private bool executeOnce = false;
+
     void Start()
     {
-        if(ovrCameraRig != null)
-        {
-            float userEyeHeight = ovrCameraRig.centerEyeAnchor.position.y;
-            float heightRatio = userEyeHeight / modelEyeHeight;
-            Debug.Log($"User eye height: {userEyeHeight}, Height Ratio: {heightRatio}");
-            transform.localScale = new Vector3(heightRatio, heightRatio, heightRatio);
-            headBodyPositionOffset *= heightRatio;
-        }
-        else
-        {
-            Debug.Log("não achou camera rig");
-        }
+        
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
+        float userEyeHeight = ovrCameraRig.trackerAnchor.position.y;
+        float heightRatio = userEyeHeight / modelEyeHeight;
+        Debug.Log($"User eye height: {userEyeHeight}, Height Ratio: {heightRatio}");
+        if (!executeOnce)
+        {
+            if (ovrCameraRig != null)
+            {
+                transform.localScale = new Vector3(heightRatio, heightRatio, heightRatio);
+                headBodyPositionOffset *= heightRatio;
+            }
+            else
+            {
+                Debug.Log("não achou camera rig");
+            }
+
+            executeOnce = true;
+        }
+        
+
         transform.position = head.ikTarget.position + headBodyPositionOffset;
         float yaw = head.vrTarget.eulerAngles.y;
         transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(transform.eulerAngles.x, yaw, transform.eulerAngles.z),turnSmoothness);
