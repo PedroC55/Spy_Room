@@ -43,7 +43,7 @@ public class IKTargetFollowVRRig : MonoBehaviour
     {
         float userEyeHeight = ovrCameraRig.trackerAnchor.position.y;
         float heightRatio = userEyeHeight / modelEyeHeight;
-        Debug.Log($"User eye height: {userEyeHeight}, Height Ratio: {heightRatio}");
+        //Debug.Log($"User eye height: {userEyeHeight}, Height Ratio: {heightRatio}");
         if (!executeOnce)
         {
             if (ovrCameraRig != null)

@@ -208,10 +208,12 @@ public class RoomSpawnPosition : MonoBehaviour
         var prefabBounds = Utilities.GetPrefabBounds(objectToSpawn);
         var minRadius = 0.0f;
         const float clearanceDistance = 0.01f;
-        var baseOffset = -prefabBounds?.min.y ?? 0.0f;
+        //var baseOffset = -prefabBounds?.min.y ?? 0.0f;
+        var baseOffset = 0.0f;
         var centerOffset = prefabBounds?.center.y ?? 0.0f;
+
         float currentDistance = 0f;
-        Vector3 currentVectorPostion = Vector3.zero;
+        Vector3 currentVectorPosition = Vector3.zero;
         Quaternion currentVectorRotation = Quaternion.identity;
         bool sucess = false;
         Bounds adjustedBounds = new();
@@ -244,7 +246,6 @@ public class RoomSpawnPosition : MonoBehaviour
 
         for (var j = 0; j < MaxIterations; ++j)
         {
-            Debug.Log($"Remaining interactions to find farthest point: {maxInteractions}");
             spawnPosition = Vector3.zero;
             spawnNormal = Vector3.zero;
             MRUK.SurfaceType surfaceType = 0;
@@ -252,6 +253,7 @@ public class RoomSpawnPosition : MonoBehaviour
 
             if (room.GenerateRandomPositionOnSurface(surfaceType, minRadius, new LabelFilter(Labels), out var pos, out var normal))
             {
+                Debug.Log(baseOffset);
                 spawnPosition = pos + normal * baseOffset;
                 spawnNormal = normal;
                 var center = spawnPosition + normal * centerOffset;
@@ -302,7 +304,7 @@ public class RoomSpawnPosition : MonoBehaviour
             if (distance > currentDistance)
             {
                 currentDistance = distance;
-                currentVectorPostion = spawnPosition;
+                currentVectorPosition = spawnPosition;
                 currentVectorRotation = spawnRotation;
             }
 
@@ -317,13 +319,13 @@ public class RoomSpawnPosition : MonoBehaviour
         { 
             if (objectToSpawn.scene.path == null)
             {
-                var item = Instantiate(objectToSpawn, currentVectorPostion, currentVectorRotation, transform);
+                var item = Instantiate(objectToSpawn, currentVectorPosition, currentVectorRotation, transform);
                 spawnedObjects.Add(item);
                 return item;
             }
             else
             {
-                objectToSpawn.transform.position = currentVectorPostion;
+                objectToSpawn.transform.position = currentVectorPosition;
                 //objectToSpawn.transform.rotation = currentVectorRotation;
                 return objectToSpawn; // ignore SpawnAmount once we have a successful move of existing object in the scene
             }
