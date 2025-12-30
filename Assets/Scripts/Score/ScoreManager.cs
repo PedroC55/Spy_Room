@@ -11,6 +11,18 @@ public class ScoreManager : MonoBehaviour
     private int currentScore;
     private Camera mainCamera;
 
+    private void OnEnable()
+    {
+        GameEvents.OnDiamondGrab += DiamongGrabed;
+        GameEvents.OnHitLaser += HittedLaser;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnDiamondGrab -= DiamongGrabed;
+        GameEvents.OnHitLaser -= HittedLaser;
+    }
+
     void Start()
     {
         currentScore = startingScore;
@@ -54,6 +66,7 @@ public class ScoreManager : MonoBehaviour
 
     public void IncreaseScore(int amount)
     {
+        Debug.LogError("Aumenta o Score");
         currentScore += amount;
         UpdateScoreDisplay();
     }
@@ -67,6 +80,16 @@ public class ScoreManager : MonoBehaviour
     {
         currentScore = startingScore;
         UpdateScoreDisplay();
+    }
+
+    private void DiamongGrabed()
+    {
+        IncreaseScore(10);
+    }
+
+    private void HittedLaser()
+    {
+        DecreaseScore(10);
     }
 
     private void UpdateScoreDisplay()
