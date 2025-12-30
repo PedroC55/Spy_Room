@@ -14,6 +14,15 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private Color laserColor = Color.red;
     [SerializeField] private LayerMask sceneMeshLayer;
 
+    [Header("Laser Type Probabilities")]
+    [SerializeField][Range(0f, 1f)] private float horizontalLaserChance = 0.3f; // 30% horizontal
+
+    [Header("Horizontal Laser Settings")]
+    [SerializeField] private float minHeightAboveGround = 1.2f; // Altura mínima acima do chão
+    [SerializeField] private float maxHeightAboveGround = 2.0f; // Altura máxima acima do chão
+    [SerializeField] private float headHeightOffset = 0.2f; // Offset em relação à altura da cabeça
+    [SerializeField] private float maxLaserLength = 50f; // Comprimento máximo do laser horizontal
+
     [SerializeField] private OVRCameraRig ovrCameraRig;
 
     private List<GameObject> activeLasers = new List<GameObject>();
@@ -53,14 +62,27 @@ public class LaserSpawner : MonoBehaviour
     {
         for (int i = 0; i < numberOfLasers; i++)
         {
-            StartCoroutine(WaitEndOfFrame());
+            SpawnNewLaser();
         }
     }
 
     private void SpawnNewLaser()
     {
-        //COLOCAR AQUI OS CALCULOS PROBABILISTICOS DE ONDE SPAWNAR O LASER
-        SpawnCellingLaser();
+        // Decide aleatoriamente entre horizontal e vertical
+        float randomValue = Random.Range(0f, 1f);
+
+        if (randomValue < horizontalLaserChance)
+        {
+            Debug.Log("Spawning Horizontal Laser");
+            // 30% chance - Spawn horizontal laser
+            StartCoroutine(WaitEndOfFrameHorizontal());
+        }
+        else
+        {
+            Debug.Log("Spawning Vertical Laser");
+            // 70% chance - Spawn vertical laser
+            StartCoroutine(WaitEndOfFrame());
+        }
     }
 
     private IEnumerator WaitEndOfFrame()
@@ -68,6 +90,13 @@ public class LaserSpawner : MonoBehaviour
         yield return new WaitForEndOfFrame();
         SpawnCellingLaser();
     }
+
+    private IEnumerator WaitEndOfFrameHorizontal()
+    {
+        yield return new WaitForEndOfFrame();
+        SpawnHorizontalLaser();
+    }
+
 
     private void SpawnCellingLaser()
     {
@@ -103,6 +132,49 @@ public class LaserSpawner : MonoBehaviour
         activeLasers.Add(laser);
     }
 
+    private void SpawnHorizontalLaser()
+    {
+        // Usa o novo método TryToSpawnHorizontalLaser para validar tudo antes de spawnar
+        GameObject laser = RoomSpawnPosition.Instance.TryToSpawnHorizontalLaser(laserPrefab,currentRoom, ovrCameraRig.trackerAnchor, minHeightAboveGround,maxHeightAboveGround,headHeightOffset,sceneMeshLayer,maxLaserLength,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint);
+
+        Debug.Log($"SpawnPosition: {spawnPosition}, LaserDirection: {laserDirection}, StartPoint: {startPoint}, EndPoint: {endPoint}");
+        if (laser == null)
+        {
+            Debug.LogWarning("Failed to spawn horizontal laser after validation");
+            return;
+        }
+
+        // Configure LaserBehavior
+        laser.GetComponent<LaserBehavior>().SetOVRCameraRig(ovrCameraRig);
+
+        // Configure LineRenderer
+        LineRenderer line = laser.GetComponent<LineRenderer>();
+        line.startColor = laserColor;
+        line.endColor = laserColor;
+        line.startWidth = laserWidth;
+        line.endWidth = laserWidth;
+        line.SetPosition(0, startPoint);
+        line.SetPosition(1, endPoint);
+
+        // Rotate laser to align with horizontal direction
+        laser.transform.rotation = Quaternion.LookRotation(laserDirection, Vector3.up);
+        laser.transform.Rotate(90, 0, 0); // Adjust for correct orientation
+
+        // Configure CapsuleCollider
+        CapsuleCollider col = laser.AddComponent<CapsuleCollider>();
+        col.isTrigger = true;
+        col.radius = laserWidth;
+
+        // Calculate center and length for the collider
+        Vector3 center = (startPoint + endPoint) / 2f;
+        float length = Vector3.Distance(startPoint, endPoint);
+
+        col.center = laser.transform.InverseTransformPoint(center);
+        col.height = length;
+        col.direction = 1; // Y-axis in local space (horizontal in world space)
+
+        activeLasers.Add(laser);
+    }
     // Optional: Method to clear all lasers
     private void ClearLasers()
     {

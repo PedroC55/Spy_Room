@@ -1150,6 +1150,11 @@ MonoBehaviour:
   sceneMeshLayer:
     serializedVersion: 2
     m_Bits: 256
+  horizontalLaserChance: 1
+  minHeightAboveGround: 1.2
+  maxHeightAboveGround: 2
+  headHeightOffset: 0.2
+  maxLaserLength: 50
   ovrCameraRig: {fileID: 1340296131}
 --- !u!4 &1297164920
 Transform:

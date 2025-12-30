@@ -201,6 +201,154 @@ public class RoomSpawnPosition : MonoBehaviour
         return null;
     }
 
+    public GameObject TryToSpawnHorizontalLaser(GameObject laserPrefab,MRUKRoom room,Transform playerHeadTransform,float minHeight,float maxHeight,float headHeightOffset,LayerMask sceneMeshLayer,float maxLaserLength,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint)
+    {
+        spawnPosition = Vector3.zero;
+        laserDirection = Vector3.zero;
+        startPoint = Vector3.zero;
+        endPoint = Vector3.zero;
+
+        float playerHeadHeight = playerHeadTransform.position.y;
+
+        for (int i = 0; i < MaxIterations; i++)
+        {
+            // Try to find a position on a vertical surface (wall)
+            if (!room.GenerateRandomPositionOnSurface(
+                MRUK.SurfaceType.VERTICAL,
+                0f,
+                new LabelFilter(Labels),
+                out var wallPosition,
+                out var wallNormal))
+            {
+                continue;
+            }
+
+            // Calculate desired height with random variation
+            float desiredHeight = playerHeadHeight + Random.Range(-headHeightOffset, headHeightOffset);
+            desiredHeight = Mathf.Clamp(desiredHeight, minHeight, maxHeight);
+
+            // Adjust spawn position to desired height
+            Vector3 adjustedPosition = wallPosition;
+            adjustedPosition.y = desiredHeight;
+
+            // Check if position is inside the room at the adjusted height
+            if (!room.IsPositionInRoom(adjustedPosition))
+            {
+                continue;
+            }
+
+            // Check if position is inside a scene volume
+            if (room.IsPositionInSceneVolume(adjustedPosition))
+            {
+                continue;
+            }
+
+            // Calculate horizontal laser direction (perpendicular to wall normal)
+            Vector3 potentialDirection = Vector3.Cross(wallNormal, Vector3.up);
+
+            // If direction is too small, try alternative
+            if (potentialDirection.magnitude < 0.01f)
+            {
+                potentialDirection = Vector3.Cross(wallNormal, Vector3.forward);
+            }
+
+            // Still invalid? Skip this iteration
+            if (potentialDirection.magnitude < 0.01f)
+            {
+                continue;
+            }
+
+            potentialDirection.Normalize();
+
+            // Perform raycasts in both directions to find laser endpoints
+            Vector3 potentialStart = adjustedPosition;
+            Vector3 potentialEnd = adjustedPosition;
+            bool hitStart = false;
+            bool hitEnd = false;
+
+            // Raycast in positive direction
+            if (Physics.Raycast(new Ray(adjustedPosition, potentialDirection), out var hit1, maxLaserLength, sceneMeshLayer))
+            {
+                potentialEnd = hit1.point;
+                hitEnd = true;
+            }
+            else
+            {
+                potentialEnd = adjustedPosition + potentialDirection * maxLaserLength;
+            }
+
+            // Raycast in negative direction
+            if (Physics.Raycast(new Ray(adjustedPosition, -potentialDirection), out var hit2, maxLaserLength, sceneMeshLayer))
+            {
+                potentialStart = hit2.point;
+                hitStart = true;
+            }
+            else
+            {
+                potentialStart = adjustedPosition - potentialDirection * maxLaserLength;
+            }
+
+            // Validate laser length - should be reasonable
+            float laserLength = Vector3.Distance(potentialStart, potentialEnd);
+            if (laserLength < 0.5f) // Minimum laser length
+            {
+                continue;
+            }
+
+            // Check if there's clearance around the laser path (no obstructions)
+            Vector3 laserCenter = (potentialStart + potentialEnd) / 2f;
+            float clearanceRadius = 0.1f;
+
+            // Sample a few points along the laser to check for obstructions
+            bool obstructed = false;
+            int checkPoints = 5;
+            for (int p = 0; p <= checkPoints; p++)
+            {
+                float t = p / (float)checkPoints;
+                Vector3 checkPoint = Vector3.Lerp(potentialStart, potentialEnd, t);
+
+                // Check if this point is in a valid position
+                if (!room.IsPositionInRoom(checkPoint) || room.IsPositionInSceneVolume(checkPoint))
+                {
+                    obstructed = true;
+                    break;
+                }
+
+                // Optional: Check for nearby colliders using SphereCast
+                if (CheckOverlaps)
+                {
+                    if (Physics.CheckSphere(checkPoint, clearanceRadius, LayerMask, QueryTriggerInteraction.Ignore))
+                    {
+                        obstructed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (obstructed)
+            {
+                continue;
+            }
+
+            // All validations passed! Set output parameters
+            spawnPosition = adjustedPosition;
+            laserDirection = potentialDirection;
+            startPoint = potentialStart;
+            endPoint = potentialEnd;
+
+            // Spawn the laser
+            Quaternion laserRotation = Quaternion.LookRotation(laserDirection, Vector3.up);
+            var spawnedLaser = Instantiate(laserPrefab, spawnPosition, laserRotation, transform);
+            spawnedObjects.Add(spawnedLaser);
+
+            Debug.Log($"Successfully spawned horizontal laser at height {desiredHeight:F2}m after {i + 1} iterations (Player head: {playerHeadHeight:F2}m)");
+            return spawnedLaser;
+        }
+
+        Debug.LogWarning($"Failed to spawn horizontal laser after {MaxIterations} iterations.");
+        return null;
+    }
+
     public GameObject SpawnObjective(GameObject objectToSpawn, Transform playerPosition, MRUKRoom room, int maxInteractions, out Vector3 spawnPosition, out Vector3 spawnNormal)
     {
         spawnPosition = Vector3.zero;
