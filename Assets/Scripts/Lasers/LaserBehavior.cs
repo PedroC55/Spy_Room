@@ -1,3 +1,6 @@
+using Meta.XR.Simulator.Editor;
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -9,9 +12,9 @@ public class LaserBehavior : MonoBehaviour
     private GameObject laserHitAudioObject;
     [SerializeField]
     private VisualEffect laserVisualEffect;
+    [SerializeField] private LayerMask sceneMeshLayer;
 
     private OVRCameraRig ovrCameraRig;
-
 
     void Update()
     {
@@ -24,8 +27,11 @@ public class LaserBehavior : MonoBehaviour
 
         if (laserVisualEffect.GetBool("Hit"))
         {
-            laserHitAudioObject.SetActive(true);
-            laserHitAudioObject.transform.position = laserVisualEffect.GetVector3("position");
+            if (Physics.Raycast(new Ray(transform.position, transform.up), out var hit, Mathf.Infinity, sceneMeshLayer))
+            {
+                laserHitAudioObject.SetActive(true);
+                laserHitAudioObject.transform.position = hit.point;
+            }
         }
         else laserHitAudioObject.SetActive(false);
     }
@@ -37,19 +43,10 @@ public class LaserBehavior : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.CompareTag("MainCamera"))
+        if (other.CompareTag("Player"))
         {
-            Debug.LogError("Player has touched the laser!");
-            OnLaserTouched(other.gameObject);
-        }
-    }
-
-    private void OnLaserTouched(GameObject player)
-    {       
-        ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
-        if (scoreManager != null)
-        {
-            scoreManager.DecreaseScore(10);
+            Debug.LogWarning("Player has touched the laser!");
+            GameEvents.HitLaser();
         }
     }
 }

@@ -160,6 +160,9 @@ MonoBehaviour:
   laserBeamAudioObject: {fileID: 2366792066312165349}
   laserHitAudioObject: {fileID: 4278481340688987314}
   laserVisualEffect: {fileID: 7205070093193633791}
+  sceneMeshLayer:
+    serializedVersion: 2
+    m_Bits: 264
 --- !u!54 &3083636498913637516
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -396,6 +399,21 @@ VisualEffect:
       - m_Value: {x: 0, y: 0, z: 0}
         m_Name: Position_position
         m_Overridden: 1
+      - m_Value: {x: 0, y: 0, z: 0}
+        m_Name: Position2_position
+        m_Overridden: 1
+      - m_Value: {x: 0, y: 0, z: 0}
+        m_Name: HitPosition
+        m_Overridden: 1
+      - m_Value: {x: 0, y: 0.0000000093579295, z: -0.07850001}
+        m_Name: Sound_position
+        m_Overridden: 1
+      - m_Value: {x: 90, y: 0, z: 0}
+        m_Name: Sound_angles
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1.0000001, z: 1.0000001}
+        m_Name: Sound_scale
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -497,7 +515,7 @@ MonoBehaviour:
   RaycastDirectionSpace: 0
   Layers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 264
   MaxDistance: 100
 --- !u!1 &4278481340688987314
 GameObject:
@@ -545,8 +563,8 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 3121ba632b132ea42b0e8f28dcab3548, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
+  m_Volume: 0.8
+  m_Pitch: 1.5
   Loop: 1
   Mute: 0
   Spatialize: 1
@@ -554,7 +572,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 1.5
+  MaxDistance: 2
   Pan2D: 0
   rolloffMode: 2
   BypassEffects: 0

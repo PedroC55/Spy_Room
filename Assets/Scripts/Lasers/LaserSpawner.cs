@@ -14,31 +14,20 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private Color laserColor = Color.red;
     [SerializeField] private LayerMask sceneMeshLayer;
 
-    [Header("Objective Settings")]
-    [SerializeField] private GameObject objectivePrefab;
-    [SerializeField] private int maxInteractions = 20;
-    [SerializeField] private float objectiveWidth = 0.3f;
-    [SerializeField] private Color objectiveColor = Color.yellow;
-
-    GameObject objective;
-
-
-
     [SerializeField] private OVRCameraRig ovrCameraRig;
 
     private List<GameObject> activeLasers = new List<GameObject>();
 
     private MRUKRoom currentRoom;
 
-
     private void OnEnable()
     {
-        HitObjective.OnHit += SpawnObjective;
+        GameEvents.OnDiamondGrab += SpawnNewLaser;
     }
 
     private void OnDisable()
     {
-        HitObjective.OnHit -= SpawnObjective;
+        GameEvents.OnDiamondGrab -= SpawnNewLaser;
     }
 
     void Start()
@@ -51,20 +40,16 @@ public class LaserSpawner : MonoBehaviour
         }
 
         MRUK.Instance.RoomCreatedEvent.AddListener(OnSceneLoaded);
-
-        
     }
 
     private void OnSceneLoaded(MRUKRoom room)
     {
         currentRoom = room;
 
-        SpawnLasers();
-
-        StartCoroutine(WaitEndOfFrameObjective());
+        SpawnInitialLasers();
     }
 
-    private void SpawnLasers()
+    private void SpawnInitialLasers()
     {
         for (int i = 0; i < numberOfLasers; i++)
         {
@@ -72,10 +57,10 @@ public class LaserSpawner : MonoBehaviour
         }
     }
 
-    private IEnumerator WaitEndOfFrameObjective()
+    private void SpawnNewLaser()
     {
-        yield return new WaitForEndOfFrame();
-        SpawnObjective();
+        //COLOCAR AQUI OS CALCULOS PROBABILISTICOS DE ONDE SPAWNAR O LASER
+        SpawnCellingLaser();
     }
 
     private IEnumerator WaitEndOfFrame()
@@ -84,49 +69,7 @@ public class LaserSpawner : MonoBehaviour
         SpawnCellingLaser();
     }
 
-    public void SpawnObjective()
-    {
-        var spawnPostion = Vector3.zero;
-        var spawnNormal = Vector3.zero;
-        if (objective != null)
-        {
-            objective = RoomSpawnPosition.Instance.SpawnObjective(objective, ovrCameraRig.transform, currentRoom, maxInteractions, out spawnPostion, out spawnNormal);
-        }
-        else
-        {
-            objective = RoomSpawnPosition.Instance.SpawnObjective(objectivePrefab, ovrCameraRig.transform, currentRoom, maxInteractions, out spawnPostion, out spawnNormal);
-            objective.GetComponent<ObjectiveBehavior>().SetLaserSpawner(this);
-        }
-        if (objective == null)
-        {
-            return;
-        }
-        if (Physics.Raycast(new Ray(spawnPostion, spawnNormal), out var hit, Mathf.Infinity, sceneMeshLayer))
-        {
-            LineRenderer line = objective.GetComponent<LineRenderer>();
-            line.startColor = objectiveColor;
-            line.endColor = objectiveColor;
-            line.startWidth = objectiveWidth;
-            line.endWidth = objectiveWidth;
-
-            Physics.Raycast(new Ray(spawnPostion, -spawnNormal), out var hitOrigin, Mathf.Infinity, sceneMeshLayer);
-
-            line.SetPosition(0, hitOrigin.point);
-            line.SetPosition(1, hit.point);
-
-            CapsuleCollider col = objective.AddComponent<CapsuleCollider>();
-            col.isTrigger = true;
-            col.radius = objectiveWidth;
-        }
-        else
-        {
-            Debug.LogWarning("Raycast did not hit Terrain");
-        }
-    }
-
-
-
-    public void SpawnCellingLaser()
+    private void SpawnCellingLaser()
     {
         GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, RoomSpawnPosition.SpawnLocation.HangingDown, out var spawnPostion, out var spawnNormal);
         if (laser == null)
@@ -160,57 +103,8 @@ public class LaserSpawner : MonoBehaviour
         activeLasers.Add(laser);
     }
 
-    public void RemoveObjective()
-    {
-        GameObject objective = GameObject.FindWithTag("Objective");
-        if (objective != null)
-        {
-            Destroy(objective);
-        }
-    }
-
-    private void CreateLaser(Vector3 topPosition, float height)
-    {
-        GameObject laser = new GameObject("VerticalLaser");
-        laser.transform.position = topPosition;
-        laser.transform.parent = transform;
-
-        // Add LineRenderer component
-        LineRenderer lineRenderer = laser.AddComponent<LineRenderer>();
-        
-        // Configure LineRenderer
-        lineRenderer.startWidth = laserWidth;
-        lineRenderer.endWidth = laserWidth;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.startColor = laserColor;
-        lineRenderer.endColor = laserColor;
-        lineRenderer.positionCount = 2;
-        
-        // Set positions (from ceiling to floor)
-        Vector3 bottomPosition = topPosition;
-        bottomPosition.y -= height;
-        
-        lineRenderer.SetPosition(0, topPosition);
-        lineRenderer.SetPosition(1, bottomPosition);
-
-        // Add collider for detection
-        CapsuleCollider laserCollider = laser.AddComponent<CapsuleCollider>();
-        laserCollider.isTrigger = true;
-        laserCollider.radius = laserWidth;
-        laserCollider.height = height;
-        laserCollider.direction = 1; // Y-axis
-        laserCollider.center = new Vector3(0, -height / 2, 0);
-
-        // Add laser behavior script
-        LaserBehavior laserBehavior = laser.AddComponent<LaserBehavior>();
-
-        activeLasers.Add(laser);
-        
-        Debug.Log($"Laser created at position: {topPosition}");
-    }
-
     // Optional: Method to clear all lasers
-    public void ClearLasers()
+    private void ClearLasers()
     {
         foreach (GameObject laser in activeLasers)
         {
@@ -220,9 +114,9 @@ public class LaserSpawner : MonoBehaviour
     }
 
     // Optional: Method to respawn lasers
-    public void RespawnLasers()
+    private void RespawnLasers()
     {
         ClearLasers();
-        SpawnLasers();
+        SpawnInitialLasers();
     }
 }

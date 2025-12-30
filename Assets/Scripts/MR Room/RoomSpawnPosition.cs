@@ -201,7 +201,7 @@ public class RoomSpawnPosition : MonoBehaviour
         return null;
     }
 
-    public GameObject SpawnObjective(GameObject objectToSpawn,Transform playerPosition, MRUKRoom room, int maxInteractions, out Vector3 spawnPosition, out Vector3 spawnNormal)
+    public GameObject SpawnObjective(GameObject objectToSpawn, Transform playerPosition, MRUKRoom room, int maxInteractions, out Vector3 spawnPosition, out Vector3 spawnNormal)
     {
         spawnPosition = Vector3.zero;
         spawnNormal = Vector3.zero;
@@ -249,14 +249,11 @@ public class RoomSpawnPosition : MonoBehaviour
             spawnNormal = Vector3.zero;
             MRUK.SurfaceType surfaceType = 0;
             surfaceType |= MRUK.SurfaceType.FACING_UP;
-            
 
             if (room.GenerateRandomPositionOnSurface(surfaceType, minRadius, new LabelFilter(Labels), out var pos, out var normal))
             {
-
                 spawnPosition = pos + normal * baseOffset;
-                spawnNormal = -normal;
-                Debug.Log("Spawn Normal Candidate: " + spawnNormal);
+                spawnNormal = normal;
                 var center = spawnPosition + normal * centerOffset;
                 // In some cases, surfaces may protrude through walls and end up outside the room
                 // check to make sure the center of the prefab will spawn inside the room
@@ -273,6 +270,12 @@ public class RoomSpawnPosition : MonoBehaviour
 
                 // Also make sure there is nothing close to the surface that would obstruct it
                 if (room.Raycast(new Ray(pos, normal), SurfaceClearanceDistance, out _))
+                {
+                    continue;
+                }
+
+                //If spawn close to player, retry
+                if (Vector3.Distance(playerPosition.position, center) < 0.5f)
                 {
                     continue;
                 }
@@ -309,12 +312,10 @@ public class RoomSpawnPosition : MonoBehaviour
                 sucess = true;
                 break;
             }
-                
-            
         }
         if (sucess)
         { 
-            if (objectToSpawn.gameObject.scene.path == null)
+            if (objectToSpawn.scene.path == null)
             {
                 var item = Instantiate(objectToSpawn, currentVectorPostion, currentVectorRotation, transform);
                 spawnedObjects.Add(item);
@@ -323,19 +324,12 @@ public class RoomSpawnPosition : MonoBehaviour
             else
             {
                 objectToSpawn.transform.position = currentVectorPostion;
-                objectToSpawn.transform.rotation = currentVectorRotation;
+                //objectToSpawn.transform.rotation = currentVectorRotation;
                 return objectToSpawn; // ignore SpawnAmount once we have a successful move of existing object in the scene
             }
-
-
-            
         }
-        
-        
         return null;
     }
-
-
 
     /// <summary>
     /// Destroys all the game objects instantiated and clears the <see cref="SpawnedObjects"/> list.
