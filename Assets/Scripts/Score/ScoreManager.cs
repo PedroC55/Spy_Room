@@ -61,12 +61,10 @@ public class ScoreManager : MonoBehaviour
         if (currentScore < 0) currentScore = 0;
         
         UpdateScoreDisplay();
-        Debug.Log($"Score decreased by {amount}. Current score: {currentScore}");
     }
 
     public void IncreaseScore(int amount)
     {
-        Debug.LogError("Aumenta o Score");
         currentScore += amount;
         UpdateScoreDisplay();
     }
