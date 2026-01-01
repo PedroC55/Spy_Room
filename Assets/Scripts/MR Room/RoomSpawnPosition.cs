@@ -80,7 +80,7 @@ public class RoomSpawnPosition : MonoBehaviour
             Destroy(this);
             return;
         }
-
+        Random.InitState(System.DateTime.Now.Millisecond + System.DateTime.Now.Second * 1000);
         Instance = this;
     }
 
@@ -224,12 +224,13 @@ public class RoomSpawnPosition : MonoBehaviour
             }
 
             // Calculate desired height with random variation
-            float desiredHeight = playerHeadHeight + Random.Range(-headHeightOffset, headHeightOffset);
-            desiredHeight = Mathf.Clamp(desiredHeight, minHeight, maxHeight);
+            float desiredHeight = playerHeadHeight + Random.Range(0f, headHeightOffset * 2f); // Só positivo!
+            desiredHeight = Mathf.Clamp(desiredHeight, minHeight, maxHeight); // Mínimo = cabeça
+
 
             // Adjust spawn position to desired height
             Vector3 adjustedPosition = wallPosition;
-            adjustedPosition.y = desiredHeight;
+            adjustedPosition.y = (float)(desiredHeight + playerHeadTransform.position.y);
 
             // Check if position is inside the room at the adjusted height
             if (!room.IsPositionInRoom(adjustedPosition))
@@ -331,6 +332,7 @@ public class RoomSpawnPosition : MonoBehaviour
             }
 
             // All validations passed! Set output parameters
+
             spawnPosition = adjustedPosition;
             laserDirection = potentialDirection;
             startPoint = potentialStart;
@@ -338,7 +340,7 @@ public class RoomSpawnPosition : MonoBehaviour
 
             // Spawn the laser
             Quaternion laserRotation = Quaternion.LookRotation(laserDirection, Vector3.up);
-            var spawnedLaser = Instantiate(laserPrefab, spawnPosition, laserRotation, transform);
+            var spawnedLaser = Instantiate(laserPrefab, potentialStart, laserRotation, null);
             spawnedObjects.Add(spawnedLaser);
 
             Debug.Log($"Successfully spawned horizontal laser at height {desiredHeight:F2}m after {i + 1} iterations (Player head: {playerHeadHeight:F2}m)");

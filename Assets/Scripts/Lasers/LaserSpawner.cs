@@ -135,9 +135,8 @@ public class LaserSpawner : MonoBehaviour
     private void SpawnHorizontalLaser()
     {
         // Usa o novo método TryToSpawnHorizontalLaser para validar tudo antes de spawnar
-        GameObject laser = RoomSpawnPosition.Instance.TryToSpawnHorizontalLaser(laserPrefab,currentRoom, ovrCameraRig.trackerAnchor, minHeightAboveGround,maxHeightAboveGround,headHeightOffset,sceneMeshLayer,maxLaserLength,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint);
+        GameObject laser = RoomSpawnPosition.Instance.TryToSpawnHorizontalLaser(laserPrefab,currentRoom, ovrCameraRig.centerEyeAnchor, minHeightAboveGround,maxHeightAboveGround,headHeightOffset,sceneMeshLayer,maxLaserLength,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint);
 
-        Debug.Log($"SpawnPosition: {spawnPosition}, LaserDirection: {laserDirection}, StartPoint: {startPoint}, EndPoint: {endPoint}");
         if (laser == null)
         {
             Debug.LogWarning("Failed to spawn horizontal laser after validation");
@@ -149,12 +148,20 @@ public class LaserSpawner : MonoBehaviour
 
         // Configure LineRenderer
         LineRenderer line = laser.GetComponent<LineRenderer>();
-        line.startColor = laserColor;
-        line.endColor = laserColor;
-        line.startWidth = laserWidth;
-        line.endWidth = laserWidth;
-        line.SetPosition(0, startPoint);
-        line.SetPosition(1, endPoint);
+        if (line != null)
+        {
+            line.useWorldSpace = true; // <- CRÍTICO! Usar coordenadas WORLD!
+            line.startColor = laserColor;
+            line.endColor = laserColor;
+            line.startWidth = laserWidth;
+            line.endWidth = laserWidth;
+            line.SetPosition(0, startPoint);
+            line.SetPosition(1, endPoint);
+        }
+        else
+        {
+            Debug.LogError("LineRenderer component not found on laser prefab!");
+        }
 
         // Rotate laser to align with horizontal direction
         laser.transform.rotation = Quaternion.LookRotation(laserDirection, Vector3.up);

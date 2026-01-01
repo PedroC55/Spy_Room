@@ -1150,7 +1150,7 @@ MonoBehaviour:
   sceneMeshLayer:
     serializedVersion: 2
     m_Bits: 256
-  horizontalLaserChance: 1
+  horizontalLaserChance: 0.3
   minHeightAboveGround: 1.2
   maxHeightAboveGround: 2
   headHeightOffset: 0.2
@@ -1165,7 +1165,7 @@ Transform:
   m_GameObject: {fileID: 1297164917}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.5562406, y: -11.794313, z: 6.495974}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
