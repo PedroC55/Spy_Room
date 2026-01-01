@@ -15,9 +15,9 @@ TagManager:
   - Placeable Surface
   - Terrain
   - Overlay UI
-  - 
-  - 
-  - 
+  - Character
+  - MirroredCharacter
+  - HiddenMesh
   - 
   - 
   - 

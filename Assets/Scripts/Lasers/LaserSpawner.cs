@@ -39,10 +39,10 @@ public class LaserSpawner : MonoBehaviour
             return;
         }
 
-        MRUK.Instance.RoomCreatedEvent.AddListener(OnSceneLoaded);
+        MRUK.Instance.RoomCreatedEvent.AddListener(OnRoomLoaded);
     }
 
-    private void OnSceneLoaded(MRUKRoom room)
+    private void OnRoomLoaded(MRUKRoom room)
     {
         currentRoom = room;
 
