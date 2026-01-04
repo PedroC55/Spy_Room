@@ -240,7 +240,7 @@ public class RoomSpawnPosition : MonoBehaviour
 
             // Adjust spawn position to desired height
             Vector3 adjustedPosition = wallPosition;
-            adjustedPosition.y = (float)(desiredHeight + playerHeadTransform.position.y);
+            adjustedPosition.y = desiredHeight;
 
             // Check if position is inside the room at the adjusted height
             if (!room.IsPositionInRoom(adjustedPosition))
