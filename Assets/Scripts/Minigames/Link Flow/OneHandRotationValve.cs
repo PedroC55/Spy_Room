@@ -1,6 +1,7 @@
 using Oculus.Interaction;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class OneHandRotationValve : MonoBehaviour, ITransformer
 {
@@ -60,6 +61,7 @@ public class OneHandRotationValve : MonoBehaviour, ITransformer
 
     private float _relativeAngle = 0.0f;
     private float _constrainedRelativeAngle = 0.0f;
+    public float CurrentAngle => _constrainedRelativeAngle;
 
     private IGrabbable _grabbable;
     private Vector3 _grabPositionInPivotSpace;
@@ -70,11 +72,14 @@ public class OneHandRotationValve : MonoBehaviour, ITransformer
 
     private Quaternion _localRotation;
     private float _startAngle = 0;
+    public float StartAngle => _startAngle;
     [HideInInspector]
     public bool IsBeingGrabbed = false;
 
-    [SerializeField]
-    private float _valveSideAngle = 60f;
+    public float ValveSideAngle = 60f;
+
+    public UnityEvent OnValveGrabbed;
+    public UnityEvent OnValveReleased;
 
     /// <summary>
     /// Implementation of <see cref="ITransformer.Initialize"/>; for details, please refer to the related documentation
@@ -156,7 +161,7 @@ public class OneHandRotationValve : MonoBehaviour, ITransformer
         float parentScale = targetTransform.parent != null ? targetTransform.parent.lossyScale.x : 1f;
         _transformPoseInPivotSpace.position /= parentScale;
 
-        IsBeingGrabbed = true;
+        OnValveGrabbed?.Invoke();
     }
 
     /// <summary>
@@ -212,8 +217,6 @@ public class OneHandRotationValve : MonoBehaviour, ITransformer
 
         targetTransform.position = _worldPivotPose.position + transformDeltaRotated.position;
         targetTransform.rotation = transformDeltaRotated.rotation;
-
-        Debug.Log(_constrainedRelativeAngle);
     }
 
     /// <summary>
@@ -222,8 +225,8 @@ public class OneHandRotationValve : MonoBehaviour, ITransformer
     /// </summary>
     public void EndTransform()
     {
-        IsBeingGrabbed = false;
-        
+        OnValveReleased?.Invoke();
+
         var targetTransform = _grabbable.Transform;
 
         Vector3 localAxis = Vector3.zero;
@@ -231,10 +234,10 @@ public class OneHandRotationValve : MonoBehaviour, ITransformer
         _worldPivotPose = ComputeWorldPivotPose();
         Vector3 rotationAxis = _worldPivotPose.rotation * localAxis;
 
-        float _ = (_constrainedRelativeAngle - _startAngle) / _valveSideAngle;
+        float _ = (_constrainedRelativeAngle - _startAngle) / ValveSideAngle;
         int numberOfTurns = Mathf.Sign(_) == 1 ? Mathf.FloorToInt(_) : Mathf.CeilToInt(_);
 
-        _constrainedRelativeAngle = (numberOfTurns * _valveSideAngle) + _startAngle;
+        _constrainedRelativeAngle = (numberOfTurns * ValveSideAngle) + _startAngle;
 
         Quaternion deltaRotation = Quaternion.AngleAxis(_constrainedRelativeAngle - _startAngle, rotationAxis);
 
