@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cd227fd30bc8a864c97ebf652e5ad572
+guid: 12af354ae149fe140868b89f6b61b5f3
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Valve
-    second: {fileID: 2100000, guid: a381c7a7fd460f3428f0ec28ca3be0e1, type: 2}
+      name: Hexagon Middle 2 Trails Baked Texture
+    second: {fileID: 2100000, guid: 56d1966ec26cd7343ab1b519880e8ed8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -38,7 +38,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 100
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -93,7 +93,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 100
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
