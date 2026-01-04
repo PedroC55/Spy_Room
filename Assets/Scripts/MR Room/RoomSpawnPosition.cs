@@ -89,7 +89,7 @@ public class RoomSpawnPosition : MonoBehaviour
     /// <see cref="MRUKRoom.GenerateRandomPositionInRoom"/> and <see cref="MRUKRoom.GenerateRandomPositionOnSurface"/> are used to generate the positions.
     /// </summary>
     /// <param name="room">The room to spawn objects in.</param>
-    public GameObject TryToSpawn(GameObject objectToSpawn, MRUKRoom room, SpawnLocation spawnLocation, out Vector3 spawnPosition, out Vector3 spawnNormal)
+    public GameObject TryToSpawn(GameObject objectToSpawn, MRUKRoom room, Transform playerHeadTransform, SpawnLocation spawnLocation, out Vector3 spawnPosition, out Vector3 spawnNormal)
     {
         spawnPosition = Vector3.zero;
         spawnNormal = Vector3.zero;
@@ -98,6 +98,8 @@ public class RoomSpawnPosition : MonoBehaviour
         const float clearanceDistance = 0.01f;
         var baseOffset = -prefabBounds?.min.y ?? 0.0f;
         var centerOffset = prefabBounds?.center.y ?? 0.0f;
+        float minHorizontalDistance = 1.0f;
+        Vector3 playerPos2D = new Vector3(playerHeadTransform.position.x, 0, playerHeadTransform.position.z);
         Bounds adjustedBounds = new();
 
         if (prefabBounds.HasValue)
@@ -170,6 +172,14 @@ public class RoomSpawnPosition : MonoBehaviour
 
                 // Also make sure there is nothing close to the surface that would obstruct it
                 if (room.Raycast(new Ray(pos, normal), SurfaceClearanceDistance, out _))
+                {
+                    continue;
+                }
+
+               
+                Vector3 spawnPos2D = new Vector3(spawnPosition.x, 0, spawnPosition.z);
+
+                if (Vector3.Distance(playerPos2D, spawnPos2D) < minHorizontalDistance)
                 {
                     continue;
                 }
@@ -303,6 +313,7 @@ public class RoomSpawnPosition : MonoBehaviour
             // Sample a few points along the laser to check for obstructions
             bool obstructed = false;
             int checkPoints = 5;
+            const float minPlayerDistance = 0.5f;
             for (int p = 0; p <= checkPoints; p++)
             {
                 float t = p / (float)checkPoints;
@@ -313,6 +324,17 @@ public class RoomSpawnPosition : MonoBehaviour
                 {
                     obstructed = true;
                     break;
+                }
+
+                if (playerHeadTransform != null)
+                {
+                    float distanceToPlayer = Vector3.Distance(checkPoint, playerHeadTransform.position);
+                    if (distanceToPlayer < minPlayerDistance)
+                    {
+                        Debug.Log($"Laser too close to player at checkpoint {p} (distance: {distanceToPlayer:F2}m)");
+                        obstructed = true;
+                        break;
+                    }
                 }
 
                 // Optional: Check for nearby colliders using SphereCast

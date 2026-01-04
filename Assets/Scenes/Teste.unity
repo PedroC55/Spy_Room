@@ -1154,7 +1154,7 @@ MonoBehaviour:
   minHeightAboveGround: 1.2
   maxHeightAboveGround: 2
   headHeightOffset: 0.2
-  maxLaserLength: 50
+  maxLaserLength: 300
   ovrCameraRig: {fileID: 1340296131}
 --- !u!4 &1297164920
 Transform:

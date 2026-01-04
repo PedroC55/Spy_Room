@@ -21,7 +21,7 @@ public class LaserSpawner : MonoBehaviour
     [SerializeField] private float minHeightAboveGround = 1.2f; // Altura mínima acima do chão
     [SerializeField] private float maxHeightAboveGround = 2.0f; // Altura máxima acima do chão
     [SerializeField] private float headHeightOffset = 0.2f; // Offset em relação à altura da cabeça
-    [SerializeField] private float maxLaserLength = 50f; // Comprimento máximo do laser horizontal
+    [SerializeField] private float maxLaserLength = 300f; // Comprimento máximo do laser horizontal
 
     [SerializeField] private OVRCameraRig ovrCameraRig;
 
@@ -100,7 +100,7 @@ public class LaserSpawner : MonoBehaviour
 
     private void SpawnCellingLaser()
     {
-        GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, RoomSpawnPosition.SpawnLocation.HangingDown, out var spawnPostion, out var spawnNormal);
+        GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, ovrCameraRig.centerEyeAnchor, RoomSpawnPosition.SpawnLocation.HangingDown, out var spawnPostion, out var spawnNormal);
         if (laser == null)
         {
             return;
