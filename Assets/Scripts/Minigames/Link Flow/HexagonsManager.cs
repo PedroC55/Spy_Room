@@ -1,11 +1,14 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class HexagonsManager : MonoBehaviour
 {
     [SerializeField]
     private HexagonController _selectedHex;
+
+    [SerializeField]
+    private VisualEffect _visualEffect;
 
     private List<HexagonController> _hexagonsList = new ();
 
@@ -31,6 +34,12 @@ public class HexagonsManager : MonoBehaviour
 
     public void HexagonSelected(HexagonController selectedHex)
     {
+        if(!_visualEffect.isActiveAndEnabled)
+            _visualEffect.enabled = true;
+
+        Vector3 vfxPosition = new (selectedHex.transform.position.x, selectedHex.transform.position.y, _visualEffect.transform.position.z);
+        _visualEffect.transform.position = vfxPosition;
+
         _selectedHex = selectedHex;
         Debug.Log($"Hexagon selected: {selectedHex.gameObject.name}");
     }
