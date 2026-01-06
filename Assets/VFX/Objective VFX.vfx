@@ -1177,7 +1177,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"x":0.0,"y":-0.75,"z":0.0}'
+      m_SerializableObject: '{"x":0.0,"y":-1.0,"z":0.0}'
     m_Space: -1
   m_Property:
     name: _Angle
@@ -1584,7 +1584,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"x":0.0,"y":-1.0}'
+      m_SerializableObject: '{"x":0.0,"y":-0.75}'
     m_Space: -1
   m_Property:
     name: _Speed
