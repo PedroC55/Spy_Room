@@ -211,21 +211,53 @@ public class RoomSpawnPosition : MonoBehaviour
         return null;
     }
 
-    public GameObject TryToSpawnHorizontalLaser(GameObject laserPrefab,MRUKRoom room,Transform playerHeadTransform,float minHeight,float maxHeight,float headHeightOffset,LayerMask sceneMeshLayer,float maxLaserLength,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint)
+    public GameObject TryToSpawnHorizontalLaser(GameObject laserPrefab,MRUKRoom room,Transform playerHeadTransform,float minHeight,float maxHeight,float headHeightOffset,LayerMask sceneMeshLayer, out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint)
     {
         spawnPosition = Vector3.zero;
-        laserDirection = Vector3.zero;
         startPoint = Vector3.zero;
         endPoint = Vector3.zero;
+        laserDirection = Vector3.zero;
+        var prefabBounds = Utilities.GetPrefabBounds(laserPrefab);
+        var minRadius = 0.0f;
+        const float clearanceDistance = 0.01f;
+        var baseOffset = -prefabBounds?.min.y ?? 0.0f;
+        var centerOffset = prefabBounds?.center.y ?? 0.0f;
+        Bounds adjustedBounds = new();
 
         float playerHeadHeight = playerHeadTransform.position.y;
+
+        if (prefabBounds.HasValue)
+        {
+            minRadius = Mathf.Min(-prefabBounds.Value.min.x, -prefabBounds.Value.min.z, prefabBounds.Value.max.x, prefabBounds.Value.max.z);
+            if (minRadius < 0f)
+            {
+                minRadius = 0f;
+            }
+
+            var min = prefabBounds.Value.min;
+            var max = prefabBounds.Value.max;
+            min.y += clearanceDistance;
+            if (max.y < min.y)
+            {
+                max.y = min.y;
+            }
+
+            adjustedBounds.SetMinMax(min, max);
+            if (OverrideBounds > 0)
+            {
+                var center = new Vector3(0f, clearanceDistance, 0f);
+                var size = new Vector3(OverrideBounds * 2f, clearanceDistance * 2f,
+                    OverrideBounds * 2f); // OverrideBounds represents the extents, not the size
+                adjustedBounds = new Bounds(center, size);
+            }
+        }
 
         for (int i = 0; i < MaxIterations; i++)
         {
             // Try to find a position on a vertical surface (wall)
             if (!room.GenerateRandomPositionOnSurface(
                 MRUK.SurfaceType.VERTICAL,
-                0f,
+                minRadius,
                 new LabelFilter(Labels),
                 out var wallPosition,
                 out var wallNormal))
@@ -240,7 +272,7 @@ public class RoomSpawnPosition : MonoBehaviour
 
             // Adjust spawn position to desired height
             Vector3 adjustedPosition = wallPosition;
-            adjustedPosition.y = desiredHeight;
+            adjustedPosition.y = (float)(desiredHeight + playerHeadHeight);
 
             // Check if position is inside the room at the adjusted height
             if (!room.IsPositionInRoom(adjustedPosition))
@@ -276,28 +308,6 @@ public class RoomSpawnPosition : MonoBehaviour
             Vector3 potentialEnd = adjustedPosition;
             bool hitStart = false;
             bool hitEnd = false;
-
-            // Raycast in positive direction
-            if (Physics.Raycast(new Ray(adjustedPosition, potentialDirection), out var hit1, maxLaserLength, sceneMeshLayer))
-            {
-                potentialEnd = hit1.point;
-                hitEnd = true;
-            }
-            else
-            {
-                potentialEnd = adjustedPosition + potentialDirection * maxLaserLength;
-            }
-
-            // Raycast in negative direction
-            if (Physics.Raycast(new Ray(adjustedPosition, -potentialDirection), out var hit2, maxLaserLength, sceneMeshLayer))
-            {
-                potentialStart = hit2.point;
-                hitStart = true;
-            }
-            else
-            {
-                potentialStart = adjustedPosition - potentialDirection * maxLaserLength;
-            }
 
             // Validate laser length - should be reasonable
             float laserLength = Vector3.Distance(potentialStart, potentialEnd);

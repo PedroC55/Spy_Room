@@ -19,8 +19,7 @@ public class LaserSpawner : MonoBehaviour
 
     [Header("Horizontal Laser Settings")]
     [SerializeField] private float minHeightAboveGround = 1.2f; // Altura mínima acima do chão
-    [SerializeField] private float maxHeightAboveGround = 2.0f; // Altura máxima acima do chão
-    [SerializeField] private float headHeightOffset = 0.2f; // Offset em relação à altura da cabeça
+    [SerializeField] private float maxHeightAboveGround = 2.0f; // Altura máxima acima do chão // Offset em relação à altura da cabeça
     [SerializeField] private float maxLaserLength = 300f; // Comprimento máximo do laser horizontal
 
     [SerializeField] private OVRCameraRig ovrCameraRig;
@@ -93,7 +92,7 @@ public class LaserSpawner : MonoBehaviour
 
     private IEnumerator WaitEndOfFrameHorizontal()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.5f);
         SpawnHorizontalLaser();
     }
 
@@ -135,7 +134,15 @@ public class LaserSpawner : MonoBehaviour
     private void SpawnHorizontalLaser()
     {
         // Usa o novo método TryToSpawnHorizontalLaser para validar tudo antes de spawnar
-        GameObject laser = RoomSpawnPosition.Instance.TryToSpawnHorizontalLaser(laserPrefab,currentRoom, ovrCameraRig.centerEyeAnchor, minHeightAboveGround,maxHeightAboveGround,headHeightOffset,sceneMeshLayer,maxLaserLength,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint);
+        Debug.Log("Altura do jogador:" + ovrCameraRig.centerEyeAnchor.position.y);
+        //GameObject laser = RoomSpawnPosition.Instance.TryToSpawnHorizontalLaser(laserPrefab,currentRoom, ovrCameraRig.centerEyeAnchor, minHeightAboveGround,maxHeightAboveGround,headHeightOffset,sceneMeshLayer,out Vector3 spawnPosition,out Vector3 laserDirection,out Vector3 startPoint,out Vector3 endPoint);
+
+        GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, ovrCameraRig.centerEyeAnchor, RoomSpawnPosition.SpawnLocation.VerticalSurfaces, out var spawnPostion, out var spawnNormal);
+  
+        float headHeightOffset = Random.Range(-0.2f, 0.2f);
+
+        laser.transform.position = new Vector3(laser.transform.position.x, ovrCameraRig.centerEyeAnchor.position.y + headHeightOffset, laser.transform.position.z);
+        Debug.Log($"laser x: {laser.transform.position.x}, y: {laser.transform.position.y},z: {laser.transform.position.z}");
 
         if (laser == null)
         {
@@ -146,40 +153,29 @@ public class LaserSpawner : MonoBehaviour
         // Configure LaserBehavior
         laser.GetComponent<LaserBehavior>().SetOVRCameraRig(ovrCameraRig);
 
-        // Configure LineRenderer
-        LineRenderer line = laser.GetComponent<LineRenderer>();
-        if (line != null)
+        spawnPostion = laser.transform.position;
+
+        if (Physics.Raycast(new Ray(spawnPostion, spawnNormal), out var hit, Mathf.Infinity, sceneMeshLayer))
         {
-            line.useWorldSpace = true; // <- CRÍTICO! Usar coordenadas WORLD!
+            LineRenderer line = laser.GetComponent<LineRenderer>();
             line.startColor = laserColor;
             line.endColor = laserColor;
             line.startWidth = laserWidth;
             line.endWidth = laserWidth;
-            line.SetPosition(0, startPoint);
-            line.SetPosition(1, endPoint);
+
+            Physics.Raycast(new Ray(spawnPostion, -spawnNormal), out var hitOrigin, Mathf.Infinity, sceneMeshLayer);
+
+            line.SetPosition(0, hitOrigin.point);
+            line.SetPosition(1, hit.point);
+
+            CapsuleCollider col = laser.AddComponent<CapsuleCollider>();
+            col.isTrigger = true;
+            col.radius = laserWidth;
         }
         else
         {
-            Debug.LogError("LineRenderer component not found on laser prefab!");
+            Debug.LogWarning("Raycast did not hit Terrain");
         }
-
-        // Rotate laser to align with horizontal direction
-        laser.transform.rotation = Quaternion.LookRotation(laserDirection, Vector3.up);
-        laser.transform.Rotate(90, 0, 0); // Adjust for correct orientation
-
-        // Configure CapsuleCollider
-        CapsuleCollider col = laser.AddComponent<CapsuleCollider>();
-        col.isTrigger = true;
-        col.radius = laserWidth;
-
-        // Calculate center and length for the collider
-        Vector3 center = (startPoint + endPoint) / 2f;
-        float length = Vector3.Distance(startPoint, endPoint);
-
-        col.center = laser.transform.InverseTransformPoint(center);
-        col.height = length;
-        col.direction = 1; // Y-axis in local space (horizontal in world space)
-
         activeLasers.Add(laser);
     }
     // Optional: Method to clear all lasers
