@@ -41,13 +41,13 @@ public class IKTargetFollowVRRig : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        float userEyeHeight = ovrCameraRig.trackerAnchor.position.y;
-        float heightRatio = userEyeHeight / modelEyeHeight;
-        //Debug.Log($"User eye height: {userEyeHeight}, Height Ratio: {heightRatio}");
-        if (!executeOnce)
+        float userEyeHeight = ovrCameraRig.centerEyeAnchor.position.y;
+
+        if (!executeOnce && userEyeHeight > 1f)
         {
             if (ovrCameraRig != null)
             {
+                float heightRatio = userEyeHeight / modelEyeHeight;
                 transform.localScale = new Vector3(heightRatio, heightRatio, heightRatio);
                 headBodyPositionOffset *= heightRatio;
             }

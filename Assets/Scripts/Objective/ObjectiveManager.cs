@@ -77,6 +77,11 @@ public class ObjectiveManager : MonoBehaviour
         }
     }
 
+    public Transform GetObjective()
+    {
+        return objective.transform;
+    }
+
     //public void RemoveObjective()
     //{
     //    GameObject objective = GameObject.FindWithTag("Objective");
