@@ -61,7 +61,7 @@ public class LaserSpawner : MonoBehaviour
     {
         for (int i = 0; i < numberOfLasers; i++)
         {
-            SpawnNewLaser();
+            StartCoroutine(WaitEndOfFrame());
         }
     }
 
@@ -74,13 +74,13 @@ public class LaserSpawner : MonoBehaviour
         {
             Debug.Log("Spawning Horizontal Laser");
             // 30% chance - Spawn horizontal laser
-            StartCoroutine(WaitEndOfFrameHorizontal());
+            SpawnHorizontalLaser();
         }
         else
         {
             Debug.Log("Spawning Vertical Laser");
             // 70% chance - Spawn vertical laser
-            StartCoroutine(WaitEndOfFrame());
+            SpawnCellingLaser();
         }
     }
 
@@ -88,12 +88,6 @@ public class LaserSpawner : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         SpawnCellingLaser();
-    }
-
-    private IEnumerator WaitEndOfFrameHorizontal()
-    {
-        yield return new WaitForSeconds(0.5f);
-        SpawnHorizontalLaser();
     }
 
 
