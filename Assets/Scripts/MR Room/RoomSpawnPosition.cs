@@ -253,7 +253,6 @@ public class RoomSpawnPosition : MonoBehaviour
 
             if (room.GenerateRandomPositionOnSurface(surfaceType, minRadius, new LabelFilter(Labels), out var pos, out var normal))
             {
-                Debug.Log(baseOffset);
                 spawnPosition = pos + normal * baseOffset;
                 spawnNormal = normal;
                 var center = spawnPosition + normal * centerOffset;
