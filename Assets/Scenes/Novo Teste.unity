@@ -391,7 +391,7 @@ MonoBehaviour:
   SpawnOnStart: 1
   MeshMaterial: {fileID: 2100000, guid: f255d5b11a070584291389d9b702d216, type: 2}
   BarycentricCoordinatesEnabled: 0
-  Colliders: 0
+  Colliders: 1
   CutHoles: 0
   castShadows: 1
   hideMesh: 0
@@ -523,6 +523,10 @@ PrefabInstance:
       propertyPath: ovrCameraRig
       value: 
       objectReference: {fileID: 1221962317}
+    - target: {fileID: 4377180605542135579, guid: 0ba727e89762284489fc57e5e2fb1c85, type: 3}
+      propertyPath: sceneMeshLayer.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1391894607231097152, guid: 0ba727e89762284489fc57e5e2fb1c85, type: 3}
     m_RemovedGameObjects: []
