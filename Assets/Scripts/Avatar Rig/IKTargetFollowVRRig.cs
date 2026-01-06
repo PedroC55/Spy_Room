@@ -33,10 +33,16 @@ public class IKTargetFollowVRRig : MonoBehaviour
 
     private bool executeOnce = false;
 
+    void Start()
+    {
+        
+    }
+
     // Update is called once per frame
     void LateUpdate()
     {
         float userEyeHeight = ovrCameraRig.centerEyeAnchor.position.y;
+
         if (!executeOnce && userEyeHeight > 1f)
         {
             if (ovrCameraRig != null)

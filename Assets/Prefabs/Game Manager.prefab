@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1276523682597300138
+--- !u!1 &1704403273739915895
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,12 +8,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6335112259154790015}
-  - component: {fileID: 4811744024281590007}
-  - component: {fileID: 4916353842324456451}
-  - component: {fileID: 9127742712949923984}
-  - component: {fileID: 6992163644641556407}
-  - component: {fileID: 8538642429649369779}
+  - component: {fileID: 183173996764323760}
+  - component: {fileID: 4377180605542135579}
+  - component: {fileID: 1391894607231097152}
+  - component: {fileID: 489357571244657267}
+  - component: {fileID: 5900837957702221630}
+  - component: {fileID: 1946593406109732194}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -21,28 +21,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6335112259154790015
+--- !u!4 &183173996764323760
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276523682597300138}
+  m_GameObject: {fileID: 1704403273739915895}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.5562406, y: -11.794313, z: 6.495974}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4811744024281590007
+--- !u!114 &4377180605542135579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276523682597300138}
+  m_GameObject: {fileID: 1704403273739915895}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5dd1ebb59f18f2a4a8cc6b70498bba2d, type: 3}
@@ -55,14 +55,18 @@ MonoBehaviour:
   sceneMeshLayer:
     serializedVersion: 2
     m_Bits: 256
+  horizontalLaserChance: 1
+  minHeightAboveGround: 1.2
+  maxHeightAboveGround: 2
+  maxLaserLength: 1000000
   ovrCameraRig: {fileID: 0}
---- !u!114 &4916353842324456451
+--- !u!114 &1391894607231097152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276523682597300138}
+  m_GameObject: {fileID: 1704403273739915895}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99ec57fe6e3399142b61c55d5dd0eec7, type: 3}
@@ -73,13 +77,13 @@ MonoBehaviour:
   gameplayUI: {fileID: 0}
   checkInterval: 2
   autoRequestSpaceSetup: 1
---- !u!114 &9127742712949923984
+--- !u!114 &489357571244657267
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276523682597300138}
+  m_GameObject: {fileID: 1704403273739915895}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 33b36102c63aeb64fab3bf8e0011e15f, type: 3}
@@ -88,13 +92,13 @@ MonoBehaviour:
   startingScore: 100
   scoreText: {fileID: 0}
   scoreCanvas: {fileID: 0}
---- !u!114 &6992163644641556407
+--- !u!114 &5900837957702221630
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276523682597300138}
+  m_GameObject: {fileID: 1704403273739915895}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5471051b5de8ee540a9ac200b664a7a6, type: 3}
@@ -108,18 +112,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   SurfaceClearanceDistance: 0.1
---- !u!114 &8538642429649369779
+--- !u!114 &1946593406109732194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276523682597300138}
+  m_GameObject: {fileID: 1704403273739915895}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fa20f68439ce4d4499e45b0e1bc1cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   objectivePrefab: {fileID: 4035484334621701582, guid: be5ff33b2d180a34c88c4ed49932d85f, type: 3}
-  maxInteractions: 100
+  maxInteractions: 20
   ovrCameraRig: {fileID: 0}
