@@ -23,11 +23,13 @@ public class LaserSpawner : MonoBehaviour
     private void OnEnable()
     {
         GameEvents.OnDiamondGrab += SpawnNewLaser;
+        GameEvents.OnMinigameCompleted += ClearHalfLasers;
     }
 
     private void OnDisable()
     {
         GameEvents.OnDiamondGrab -= SpawnNewLaser;
+        GameEvents.OnMinigameCompleted -= ClearHalfLasers;
     }
 
     void Start()
@@ -103,20 +105,18 @@ public class LaserSpawner : MonoBehaviour
         activeLasers.Add(laser);
     }
 
-    // Optional: Method to clear all lasers
-    private void ClearLasers()
+    private void ClearHalfLasers()
     {
-        foreach (GameObject laser in activeLasers)
-        {
-            Destroy(laser);
-        }
-        activeLasers.Clear();
-    }
+        int totalLaser = activeLasers.Count;
+        int lasersToRemove = totalLaser / 2;
 
-    // Optional: Method to respawn lasers
-    private void RespawnLasers()
-    {
-        ClearLasers();
-        SpawnInitialLasers();
+        for (int i = 0; i < lasersToRemove; i++)
+        {
+            int randomIndex = Random.Range(0, totalLaser);
+            Destroy(activeLasers[randomIndex]);
+            activeLasers.RemoveAt(randomIndex);
+            totalLaser--;
+            Debug.Log($"Laser Removed: {i}");
+        }
     }
 }

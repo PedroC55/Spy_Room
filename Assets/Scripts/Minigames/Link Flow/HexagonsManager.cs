@@ -60,7 +60,8 @@ public class HexagonsManager : MonoBehaviour
         if(_correctlyPlacedHexagons == _totalHexagons)
         {
             Debug.Log("All hexagons placed correctly! Minigame complete.");
-            //GameEvents.LinkFlowMinigameComplete();
+            GameEvents.MinigameCompleted();
+            Destroy(transform.parent.gameObject);
         }
     }
 
