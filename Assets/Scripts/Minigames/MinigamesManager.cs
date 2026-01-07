@@ -8,7 +8,7 @@ public class MinigamesManager : MonoBehaviour
 
     [SerializeField] private OVRCameraRig ovrCameraRig;
 
-    private int spawnCount = 11;
+    private int spawnCount = 10;
 
     private MRUKRoom currentRoom;
 
@@ -46,7 +46,7 @@ public class MinigamesManager : MonoBehaviour
         if (spawnCount == 0)
         {
             SpawnMinigame();
-            spawnCount = 11;
+            spawnCount = 10;
         }
     }
 

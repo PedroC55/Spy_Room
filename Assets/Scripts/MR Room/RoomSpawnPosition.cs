@@ -183,7 +183,6 @@ public class RoomSpawnPosition : MonoBehaviour
                     continue;
                 }
 
-                Debug.LogWarning("LEMBRAR DE COLOCAR MAIS VERIFICAÇÕES NESTA PARTE DO CODIGO");
             }
             else
             {
@@ -457,12 +456,11 @@ public class RoomSpawnPosition : MonoBehaviour
                 }
 
                 //If spawn close to player, retry
-                if (Vector3.Distance(playerPosition.position, center) < 0.5f)
+                if (Vector3.Distance(playerPosition.position, spawnPosition) < 0.5f)
                 {
+                    Debug.LogError("Spawnou mt perto do player");
                     continue;
                 }
-
-                Debug.LogWarning("LEMBRAR DE COLOCAR MAIS VERIFICAÇÕES NESTA PARTE DO CODIGO");
             }
             else
             {
@@ -479,13 +477,15 @@ public class RoomSpawnPosition : MonoBehaviour
                 }
             }
 
+            Vector2 playerXZ = new Vector2(playerPosition.position.x, playerPosition.position.z);
+            Vector2 objectiveXZ = new Vector2(spawnPosition.x, spawnPosition.z);
+            float distance = Vector2.Distance(playerXZ, objectiveXZ);
 
-            float distance = Vector3.Distance(playerPosition.position, spawnPosition);
             if (distance > currentDistance)
             {
                 currentDistance = distance;
-                currentVectorPosition = spawnPosition;
-                currentVectorRotation = spawnRotation;
+                currentVectorPosition = new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z);
+                currentVectorRotation = new Quaternion(spawnRotation.x, spawnRotation.y, spawnRotation.z, spawnRotation.w);
             }
 
             maxInteractions--;

@@ -9737,7 +9737,7 @@ PrefabInstance:
       objectReference: {fileID: 211766744}
     - target: {fileID: 4377180605542135579, guid: 0ba727e89762284489fc57e5e2fb1c85, type: 3}
       propertyPath: horizontalLaserChance
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
