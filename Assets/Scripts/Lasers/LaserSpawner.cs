@@ -31,11 +31,13 @@ public class LaserSpawner : MonoBehaviour
     private void OnEnable()
     {
         GameEvents.OnDiamondGrab += SpawnNewLaser;
+        GameEvents.OnMinigameCompleted += ClearHalfLasers;
     }
 
     private void OnDisable()
     {
         GameEvents.OnDiamondGrab -= SpawnNewLaser;
+        GameEvents.OnMinigameCompleted -= ClearHalfLasers;
     }
 
     void Start()
@@ -47,10 +49,10 @@ public class LaserSpawner : MonoBehaviour
             return;
         }
 
-        MRUK.Instance.RoomCreatedEvent.AddListener(OnSceneLoaded);
+        MRUK.Instance.RoomCreatedEvent.AddListener(OnRoomLoaded);
     }
 
-    private void OnSceneLoaded(MRUKRoom room)
+    private void OnRoomLoaded(MRUKRoom room)
     {
         currentRoom = room;
 
@@ -89,7 +91,6 @@ public class LaserSpawner : MonoBehaviour
         yield return new WaitForEndOfFrame();
         SpawnCellingLaser();
     }
-
 
     private void SpawnCellingLaser()
     {
@@ -172,20 +173,22 @@ public class LaserSpawner : MonoBehaviour
         }
         activeLasers.Add(laser);
     }
-    // Optional: Method to clear all lasers
-    private void ClearLasers()
-    {
-        foreach (GameObject laser in activeLasers)
-        {
-            Destroy(laser);
-        }
-        activeLasers.Clear();
-    }
 
-    // Optional: Method to respawn lasers
-    private void RespawnLasers()
+    private void ClearHalfLasers()
     {
-        ClearLasers();
-        SpawnInitialLasers();
+        int totalLaser = activeLasers.Count;
+        int lasersToRemove = totalLaser / 2;
+
+        for (int i = 0; i < lasersToRemove; i++)
+        {
+            int randomIndex = Random.Range(0, totalLaser);
+            GameObject laser = activeLasers[randomIndex];
+            activeLasers.Remove(laser);
+            Destroy(laser);
+
+            totalLaser--;
+
+            Debug.Log($"Laser Removed: {i}");
+        }
     }
 }
