@@ -54,7 +54,7 @@ public class ObjectiveManager : MonoBehaviour
         var spawnPosition = Vector3.zero;
         var spawnNormal = Vector3.zero;
         
-        objective = RoomSpawnPosition.Instance.SpawnObjective(objectivePrefab, ovrCameraRig.transform, currentRoom, maxInteractions, out spawnPosition, out spawnNormal);
+        objective = RoomSpawnPosition.Instance.SpawnObjective(objectivePrefab, ovrCameraRig.centerEyeAnchor, currentRoom, maxInteractions, out spawnPosition, out spawnNormal);
 
         if (objective == null)
         {
@@ -68,7 +68,7 @@ public class ObjectiveManager : MonoBehaviour
         {
             var spawnPosition = Vector3.zero;
             var spawnNormal = Vector3.zero;
-            var aux = RoomSpawnPosition.Instance.SpawnObjective(objective, ovrCameraRig.transform, currentRoom, maxInteractions, out spawnPosition, out spawnNormal);
+            var aux = RoomSpawnPosition.Instance.SpawnObjective(objective, ovrCameraRig.centerEyeAnchor, currentRoom, maxInteractions, out spawnPosition, out spawnNormal);
 
             if (aux == null)
             {
