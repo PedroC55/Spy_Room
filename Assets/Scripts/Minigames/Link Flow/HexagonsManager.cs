@@ -37,8 +37,13 @@ public class HexagonsManager : MonoBehaviour
         if(!_visualEffect.isActiveAndEnabled)
             _visualEffect.enabled = true;
 
-        Vector3 vfxPosition = new (selectedHex.transform.position.x, selectedHex.transform.position.y, _visualEffect.transform.position.z);
-        _visualEffect.transform.position = vfxPosition;
+        _visualEffect.transform.SetParent(selectedHex.transform);
+        _visualEffect.transform.localPosition = new Vector3(0,0, -0.005f);
+        //Vector3 vfxPosition = new (selectedHex.transform.position.x, selectedHex.transform.position.y, _visualEffect.transform.position.z);
+        //_visualEffect.transform.position = vfxPosition;
+
+        //Vector3 vfxPosition2 = new(_visualEffect.transform.localPosition.x, _visualEffect.transform.localPosition.y, -0.035f);
+        //_visualEffect.transform.localPosition = vfxPosition2;
 
         _selectedHex = selectedHex;
         Debug.Log($"Hexagon selected: {selectedHex.gameObject.name}");

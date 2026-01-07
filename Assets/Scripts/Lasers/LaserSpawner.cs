@@ -92,7 +92,6 @@ public class LaserSpawner : MonoBehaviour
         SpawnCellingLaser();
     }
 
-
     private void SpawnCellingLaser()
     {
         GameObject laser = RoomSpawnPosition.Instance.TryToSpawn(laserPrefab, currentRoom, ovrCameraRig.centerEyeAnchor, RoomSpawnPosition.SpawnLocation.HangingDown, out var spawnPostion, out var spawnNormal);
@@ -174,7 +173,7 @@ public class LaserSpawner : MonoBehaviour
         }
         activeLasers.Add(laser);
     }
-    // Optional: Method to clear all lasers
+
     private void ClearHalfLasers()
     {
         int totalLaser = activeLasers.Count;
@@ -183,9 +182,12 @@ public class LaserSpawner : MonoBehaviour
         for (int i = 0; i < lasersToRemove; i++)
         {
             int randomIndex = Random.Range(0, totalLaser);
-            Destroy(activeLasers[randomIndex]);
-            activeLasers.RemoveAt(randomIndex);
+            GameObject laser = activeLasers[randomIndex];
+            activeLasers.Remove(laser);
+            Destroy(laser);
+
             totalLaser--;
+
             Debug.Log($"Laser Removed: {i}");
         }
     }
